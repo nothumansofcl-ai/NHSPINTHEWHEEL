@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NH MAC TT S8 — ELIMINATORS 1 — Spin The Wheel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0604;
+    --cream:#FFF8F0;
+    --gold:#FFC61A;
+    --orange:#FF6F00;
+    --card:#1C0E08;
+    --card-2:#241408;
+    --line:rgba(255,198,26,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--cream);
+    font-family:'Rajdhani',sans-serif;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+  * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:42px 42px;
+    opacity:.35;
+    z-index:0;
+  }
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:radial-gradient(ellipse at 50% -10%, rgba(255,198,26,0.12), transparent 55%);
+    z-index:0;
+  }
+
+  header.nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 26px;
+    background:rgba(12,6,4,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  header.nav img{
+    height:38px;
+    width:38px;
+    object-fit:contain;
+    filter:drop-shadow(0 0 8px rgba(255,198,26,.5));
+  }
+  header.nav .logo-fallback{
+    height:38px;width:38px;border-radius:50%;
+    background:linear-gradient(135deg,var(--gold),var(--orange));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',sans-serif;font-weight:900;color:#1a0e04;font-size:13px;
+  }
+  header.nav .brand{
+    display:flex;
+    flex-direction:column;
+    line-height:1.1;
+  }
+  header.nav .brand .name{
+    font-family:'Orbitron',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:.12em;
+    color:var(--cream);
+  }
+  header.nav .brand .tour{
+    font-size:12px;
+    letter-spacing:.14em;
+    color:var(--gold);
+    font-weight:600;
+  }
+
+  main{
+    position:relative;
+    z-index:1;
+    max-width:1180px;
+    margin:0 auto;
+    padding:34px 22px 60px;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:30px;
+  }
+  @media (max-width:900px){
+    main{grid-template-columns:1fr;}
+  }
+
+  .left{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  .title-block{
+    text-align:center;
+  }
+  .title-block h1{
+    font-family:'Orbitron',sans-serif;
+    font-weight:900;
+    font-size:clamp(24px,3.8vw,38px);
+    margin:0 0 4px;
+    color:var(--cream);
+    letter-spacing:.06em;
+    text-shadow:0 0 18px rgba(255,198,26,.3);
+  }
+  .title-block .sub{
+    font-family:'Orbitron',sans-serif;
+    font-weight:700;
+    font-size:clamp(14px,1.8vw,18px);
+    letter-spacing:.22em;
+    color:var(--gold);
+    margin:0 0 8px;
+  }
+  .title-block p{
+    margin:0;
+    color:rgba(255,248,240,0.6);
+    font-size:14px;
+    letter-spacing:.04em;
+  }
+
+  .wheel-wrap{
+    position:relative;
+    width:min(92vw,460px);
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    filter:drop-shadow(0 0 40px rgba(255,111,0,.16));
+  }
+  .wheel-glow{
+    position:absolute;
+    inset:-6%;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,198,26,0.18), transparent 70%);
+    z-index:0;
+  }
+  svg.wheel{
+    position:relative;
+    z-index:1;
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+  .slice-label{
+    font-family:'Rajdhani',sans-serif;
+    font-weight:700;
+    fill:var(--cream);
+    pointer-events:none;
+  }
+  .slice-invited-label{
+    fill:#241004;
+    font-family:'Orbitron',sans-serif;
+    font-weight:800;
+  }
+  .slice path{
+    stroke:rgba(255,198,26,0.5);
+    stroke-width:1.4;
+    transition:opacity .35s ease, filter .35s ease;
+  }
+  .slice.used path.base{
+    opacity:.28;
+    filter:grayscale(.7);
+  }
+  .slice.used .slice-label{
+    opacity:.35;
+  }
+  .invited-glow{
+    animation:invitedPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes invitedPulse{
+    0%,100%{ filter:drop-shadow(0 0 4px rgba(255,198,26,.55)); }
+    50%{ filter:drop-shadow(0 0 14px rgba(255,198,26,.95)); }
+  }
+
+  .pointer{
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:3;
+    width:0;height:0;
+    border-left:16px solid transparent;
+    border-right:16px solid transparent;
+    border-top:26px solid var(--gold);
+    filter:drop-shadow(0 0 8px rgba(255,198,26,.8));
+  }
+
+  .hub-label{
+    font-family:'Orbitron',sans-serif;
+    font-weight:800;
+    fill:var(--gold);
+  }
+  .hub-label.sub{
+    fill:var(--cream);
+    font-weight:700;
+  }
+
+  .controls{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-top:4px;
+  }
+  button.spin-btn{
+    font-family:'Orbitron',sans-serif;
+    font-weight:800;
+    font-size:16px;
+    letter-spacing:.08em;
+    color:#1a0e04;
+    background:linear-gradient(135deg,var(--gold),var(--orange));
+    border:none;
+    padding:16px 42px;
+    border-radius:10px;
+    cursor:pointer;
+    box-shadow:0 8px 26px rgba(255,111,0,.35), 0 0 0 1px rgba(255,198,26,.4) inset;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .2s ease;
+  }
+  button.spin-btn:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 12px 32px rgba(255,111,0,.5), 0 0 0 1px rgba(255,198,26,.6) inset;
+  }
+  button.spin-btn:active:not(:disabled){
+    transform:translateY(0);
+  }
+  button.spin-btn:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+  }
+  button.reset-btn{
+    background:none;
+    border:none;
+    color:rgba(255,248,240,0.75);
+    font-family:'Rajdhani',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:.08em;
+    text-decoration:underline;
+    text-underline-offset:4px;
+    cursor:pointer;
+    padding:4px 8px;
+  }
+  button.reset-btn:hover{
+    color:var(--gold);
+  }
+
+  .status{
+    min-height:20px;
+    font-size:14px;
+    color:rgba(255,248,240,0.6);
+    letter-spacing:.03em;
+    text-align:center;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-height:min(80vh,720px);
+  }
+  .panel h2{
+    font-family:'Orbitron',sans-serif;
+    font-size:14px;
+    letter-spacing:.14em;
+    color:var(--gold);
+    margin:0 0 2px;
+  }
+  .cards{
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding-right:4px;
+  }
+  .cards::-webkit-scrollbar{width:6px;}
+  .cards::-webkit-scrollbar-thumb{background:rgba(255,198,26,.35);border-radius:6px;}
+  .empty-note{
+    color:rgba(255,248,240,0.4);
+    font-size:14px;
+    padding:20px 6px;
+    text-align:center;
+  }
+  .result-card{
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    animation:cardIn .35s ease;
+  }
+  @keyframes cardIn{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .result-card .tag{
+    font-family:'Orbitron',sans-serif;
+    font-size:10px;
+    letter-spacing:.12em;
+    color:var(--gold);
+    margin-bottom:6px;
+    display:inline-block;
+  }
+  .result-card.invited{
+    background:linear-gradient(135deg, rgba(255,198,26,0.16), rgba(255,111,0,0.10));
+    border-color:rgba(255,198,26,0.55);
+  }
+  .result-card.invited .tag{
+    color:#1a0e04;
+    background:var(--gold);
+    padding:2px 8px;
+    border-radius:4px;
+  }
+  .result-card.waiting{
+    border-color:rgba(255,198,26,0.6);
+    animation:waitingPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes waitingPulse{
+    0%,100%{ box-shadow:0 0 0 0 rgba(255,198,26,0.0); border-color:rgba(255,198,26,0.35); }
+    50%{ box-shadow:0 0 14px 0 rgba(255,198,26,0.35); border-color:rgba(255,198,26,0.85); }
+  }
+  .result-card.waiting .tag{
+    color:var(--orange);
+  }
+  .result-card.waiting .match .vs{
+    color:rgba(255,248,240,0.4);
+  }
+  .result-card .match{
+    font-family:'Rajdhani',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:var(--cream);
+  }
+  .result-card .match .vs{
+    color:var(--orange);
+    font-family:'Orbitron',sans-serif;
+    font-size:12px;
+    margin:0 8px;
+  }
+
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(6,3,2,0.72);
+    backdrop-filter:blur(3px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:300;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .modal-overlay.show{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .modal-box{
+    background:var(--card);
+    border:1px solid var(--gold);
+    border-radius:14px;
+    padding:28px 30px;
+    max-width:360px;
+    width:90%;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    transform:scale(.92);
+    transition:transform .2s ease;
+  }
+  .modal-overlay.show .modal-box{
+    transform:scale(1);
+  }
+  .modal-box .modal-tag{
+    font-family:'Orbitron',sans-serif;
+    font-size:11px;
+    letter-spacing:.14em;
+    color:var(--gold);
+    margin-bottom:10px;
+  }
+  .modal-box .modal-text{
+    font-family:'Rajdhani',sans-serif;
+    font-weight:700;
+    font-size:19px;
+    line-height:1.35;
+    margin-bottom:20px;
+  }
+  .modal-box button{
+    font-family:'Orbitron',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.08em;
+    color:#1a0e04;
+    background:linear-gradient(135deg,var(--gold),var(--orange));
+    border:none;
+    padding:10px 30px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  .popper-layer{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:200;
+    overflow:hidden;
+  }
+  .confetti-piece{
+    position:absolute;
+    will-change:transform, opacity;
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <img src="https://not-humans.vercel.app/nh.png" alt="NOT HUMANS" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'logo-fallback',textContent:'NH'}))">
+  <div class="brand">
+    <span class="name">NOT HUMANS ESPORTS</span>
+    <span class="tour">NH MAC TT S8 · ELIMINATORS 1</span>
+  </div>
+</header>
+
+<main>
+  <section class="left">
+    <div class="title-block">
+      <h1>NH MAC TT S8</h1>
+      <div class="sub">ELIMINATORS 1</div>
+      <p>Spin The Wheel — Official Matchup Draw</p>
+    </div>
+
+    <div class="wheel-wrap">
+      <div class="wheel-glow"></div>
+      <div class="pointer"></div>
+      <svg class="wheel" id="wheelSvg" viewBox="0 0 560 560"></svg>
+    </div>
+
+    <div class="controls">
+      <button class="spin-btn" id="spinBtn">SPIN THE WHEEL</button>
+      <button class="reset-btn" id="resetBtn">RESET</button>
+    </div>
+    <div class="status" id="statusText">Press SPIN THE WHEEL to draw the first matchup.</div>
+  </section>
+
+  <section class="panel">
+    <h2>RESULT CARDS</h2>
+    <div class="cards" id="cardsWrap">
+      <div class="empty-note" id="emptyNote">No matchups drawn yet.</div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-tag" id="modalTag">RESULT</div>
+    <div class="modal-text" id="modalText"></div>
+    <button id="modalOk">OK</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- DATA ----------
+  const TEAMS = [
+    {id:'bxl',        name:'TEAM BXL',              short:'BXL',        invited:true},
+    {id:'wota',       name:'TEAM WOTA',             short:'WOTA'},
+    {id:'egos',       name:'TEAM EGOS VERSE 2',     short:'EGOS V2'},
+    {id:'aimjods',    name:'TEAM AIM JODS',         short:'AIM JODS'},
+    {id:'agjourney',  name:'TEAM AG JOURNEY',       short:'AG JOURNEY', weak:true},
+    {id:'losfreaks',  name:'TEAM LOS FREAKS2',      short:'LOS FREAKS'},
+    {id:'patal',      name:'TEAM PATAL UNDERATED',  short:'PATAL'},
+    {id:'contras',    name:'TEAM CONTRAS FAMILY',   short:'CONTRAS',    weak:true},
+    {id:'hlesports',  name:'TEAM HL ESPORTS',       short:'HL ESP',     weak:true},
+    {id:'naazlive',    name:'TEAM NAAZ LIVE',         short:'naaz LIVE',   invited:true},
+    {id:'nh',         name:'TEAM NH',               short:'NH'},
+    {id:'reesports',  name:'TEAM RE ESPORTS',       short:'RE ESP'},
+    {id:'nh2',        name:'TEAM NOT HUMANS 2',     short:'NH 2'},
+    {id:'s8x',        name:'TEAM S8X',              short:'S8X',        weak:true},
+    {id:'falcons',    name:'TEAM THE FALCONS 02',   short:'FALCONS'},
+    {id:'dtlegions',  name:'TEAM DT LEGIONS',       short:'DT LEGIONS'},
+    {id:'arise',      name:'TEAM ARISE',            short:'ARISE'},
+    {id:'oldprime',   name:'TEAM OLD PRIME',        short:'OLD PRIME',  weak:true}
+  ];
+  const N = TEAMS.length;
+  const SLICE_ANGLE = 360 / N;
+  const R = 250, CX = 280, CY = 280;
+  const HUB_R = 68;
+  const MYSTERY_LABEL = '?';
+
+  let used = new Array(N).fill(false);
+  let pendingQueue = [];
+  let currentRotation = 0;
+  let spinning = false;
+  let waitingCardEl = null;
+  const sliceTextEls = new Array(N).fill(null);
+
+  // ---------- AUDIO ----------
+  let actx = null;
+  function ensureAudio(){
+    if(!actx){
+      try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ actx=null; }
+    }else if(actx.state === 'suspended'){
+      actx.resume();
+    }
+  }
+  function tone(freq, dur, type, vol, delay){
+    if(!actx) return;
+    const startAt = actx.currentTime + (delay||0);
+    const o = actx.createOscillator();
+    const g = actx.createGain();
+    o.type = type || 'sine';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, startAt);
+    g.gain.exponentialRampToValueAtTime(vol!=null?vol:0.18, startAt+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, startAt + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(startAt);
+    o.stop(startAt + dur + 0.02);
+  }
+  function noiseBurst(duration, vol){
+    if(!actx) return;
+    const bufferSize = Math.floor(actx.sampleRate * duration);
+    const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){
+      data[i] = (Math.random()*2-1) * Math.pow(1 - i/bufferSize, 1.6);
+    }
+    const src = actx.createBufferSource();
+    src.buffer = buffer;
+    const filt = actx.createBiquadFilter();
+    filt.type = 'highpass';
+    filt.frequency.value = 1200;
+    const g = actx.createGain();
+    g.gain.value = vol!=null?vol:0.2;
+    src.connect(filt); filt.connect(g); g.connect(actx.destination);
+    src.start();
+  }
+  function tick(){ tone(900 + Math.random()*300, 0.06, 'square', 0.12); }
+
+  // Casino-style coin cascade for a normal selection
+  function coinCascade(){
+    const freqs = [1046.5,1318.5,1568,1760,1975.5,2093];
+    freqs.forEach((f,i)=> tone(f, 0.22, 'square', 0.12, i*0.055));
+  }
+  // Bigger jackpot fanfare for invited slot
+  function jackpotFanfare(){
+    const freqs = [523.25,659.25,783.99,1046.5,1318.51,1567.98];
+    freqs.forEach((f,i)=> tone(f, 0.45, 'sine', 0.2, i*0.11));
+    setTimeout(()=> noiseBurst(0.4, 0.15), 140);
+  }
+  // Popper burst sound (crackle + sparkle)
+  function popperSound(big){
+    noiseBurst(big?0.35:0.22, big?0.28:0.2);
+    tone(1800 + Math.random()*400, 0.09, 'triangle', 0.14, 0.02);
+    tone(2200 + Math.random()*400, 0.07, 'triangle', 0.1, 0.06);
+    if(big){ tone(2600, 0.08, 'triangle', 0.1, 0.12); }
+  }
+
+  // ---------- GEOMETRY ----------
+  function point(angleDeg, r){
+    const rad = angleDeg * Math.PI / 180;
+    return { x: CX + r*Math.sin(rad), y: CY - r*Math.cos(rad) };
+  }
+  function sliceCenterAngle(i){ return i*SLICE_ANGLE + SLICE_ANGLE/2; }
+
+  // ---------- BUILD WHEEL ----------
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById('wheelSvg');
+
+  function buildDefs(){
+    const defs = document.createElementNS(svgNS,'defs');
+    const grad = document.createElementNS(svgNS,'linearGradient');
+    grad.setAttribute('id','goldShine');
+    grad.setAttribute('x1','-40%'); grad.setAttribute('y1','0%');
+    grad.setAttribute('x2','0%');   grad.setAttribute('y2','0%');
+    const stops = [
+      ['0%','#B8860B'],['30%','#FFC61A'],['50%','#FFF3C4'],['70%','#FFC61A'],['100%','#FF6F00']
+    ];
+    stops.forEach(([off,c])=>{
+      const s = document.createElementNS(svgNS,'stop');
+      s.setAttribute('offset',off); s.setAttribute('stop-color',c);
+      grad.appendChild(s);
+    });
+    const a1 = document.createElementNS(svgNS,'animate');
+    a1.setAttribute('attributeName','x1');
+    a1.setAttribute('values','-40%;140%;-40%');
+    a1.setAttribute('dur','2.6s');
+    a1.setAttribute('repeatCount','indefinite');
+    const a2 = document.createElementNS(svgNS,'animate');
+    a2.setAttribute('attributeName','x2');
+    a2.setAttribute('values','0%;180%;0%');
+    a2.setAttribute('dur','2.6s');
+    a2.setAttribute('repeatCount','indefinite');
+    grad.appendChild(a1); grad.appendChild(a2);
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+  }
+
+  const wheelGroup = document.createElementNS(svgNS,'g');
+  wheelGroup.setAttribute('id','wheelGroup');
+
+  function buildWheel(){
+    buildDefs();
+    TEAMS.forEach((team, i)=>{
+      const start = i*SLICE_ANGLE;
+      const end = (i+1)*SLICE_ANGLE;
+      const p1 = point(start, R);
+      const p2 = point(end, R);
+      const d = `M ${CX} ${CY} L ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${R} ${R} 0 0 1 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} Z`;
+
+      const g = document.createElementNS(svgNS,'g');
+      g.setAttribute('class','slice');
+      g.setAttribute('data-index', i);
+
+      const path = document.createElementNS(svgNS,'path');
+      path.setAttribute('d', d);
+      path.setAttribute('class','base');
+      if(team.invited){
+        path.setAttribute('fill','url(#goldShine)');
+        g.classList.add('invited-glow');
+      }else{
+        path.setAttribute('fill', i%2===0 ? '#241209' : '#1C0E08');
+      }
+      g.appendChild(path);
+
+      const angle = sliceCenterAngle(i);
+      const textRadius = R*0.66;
+      const label = team.invited ? MYSTERY_LABEL : team.short;
+      const text = document.createElementNS(svgNS,'text');
+      text.setAttribute('x', CX);
+      text.setAttribute('y', CY - textRadius);
+      text.setAttribute('text-anchor','middle');
+      text.setAttribute('dominant-baseline','middle');
+      text.setAttribute('font-size', team.invited ? '22' : (team.short.length > 8 ? '13' : '15'));
+      text.setAttribute('class', 'slice-label' + (team.invited ? ' slice-invited-label' : ''));
+      text.textContent = label;
+      // Same orientation for every slice: upright when that slice is at the TOP pointer.
+      // Do not flip bottom-half labels — those flips become upside-down after they land on top.
+      text.setAttribute('transform', `rotate(${angle} ${CX} ${CY})`);
+      g.appendChild(text);
+      sliceTextEls[i] = text;
+
+      wheelGroup.appendChild(g);
+    });
+    svg.appendChild(wheelGroup);
+
+    // hub
+    const hub = document.createElementNS(svgNS,'circle');
+    hub.setAttribute('cx',CX); hub.setAttribute('cy',CY); hub.setAttribute('r',HUB_R);
+    hub.setAttribute('fill','#0C0604');
+    hub.setAttribute('stroke','var(--gold)');
+    hub.setAttribute('stroke-width','3');
+    svg.appendChild(hub);
+
+    const hub2 = document.createElementNS(svgNS,'circle');
+    hub2.setAttribute('cx',CX); hub2.setAttribute('cy',CY); hub2.setAttribute('r',HUB_R-8);
+    hub2.setAttribute('fill','none');
+    hub2.setAttribute('stroke','rgba(255,198,26,0.4)');
+    hub2.setAttribute('stroke-width','1');
+    svg.appendChild(hub2);
+
+    const nhText = document.createElementNS(svgNS,'text');
+    nhText.setAttribute('x',CX); nhText.setAttribute('y', CY-8);
+    nhText.setAttribute('text-anchor','middle');
+    nhText.setAttribute('font-size','22');
+    nhText.setAttribute('class','hub-label');
+    nhText.textContent = 'NH';
+    svg.appendChild(nhText);
+
+    const s8Text = document.createElementNS(svgNS,'text');
+    s8Text.setAttribute('x',CX); s8Text.setAttribute('y', CY+16);
+    s8Text.setAttribute('text-anchor','middle');
+    s8Text.setAttribute('font-size','14');
+    s8Text.setAttribute('class','hub-label sub');
+    s8Text.textContent = 'S8';
+    svg.appendChild(s8Text);
+  }
+  buildWheel();
+
+  function revealSliceLabel(i){
+    const team = TEAMS[i];
+    const el = sliceTextEls[i];
+    if(!el || !team.invited) return;
+    el.textContent = team.short;
+    el.setAttribute('font-size', team.short.length > 8 ? '13' : '15');
+  }
+
+  function refreshDim(){
+    TEAMS.forEach((t,i)=>{
+      const g = wheelGroup.querySelector(`g[data-index="${i}"]`);
+      if(!g) return;
+      g.classList.toggle('used', used[i]);
+    });
+  }
+
+  // ---------- POPPER ANIMATION ----------
+  function spawnPopper(big){
+    const rect = document.querySelector('.wheel-wrap').getBoundingClientRect();
+    const originX = rect.left + rect.width/2;
+    const originY = rect.top + rect.height/2;
+    const count = big ? 90 : 50;
+    const layer = document.createElement('div');
+    layer.className = 'popper-layer';
+    document.body.appendChild(layer);
+    const colors = ['#FFC61A','#FF6F00','#FFF3C4','#FFD700','#FFFFFF'];
+
+    for(let i=0;i<count;i++){
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      const size = 5 + Math.random()*7;
+      p.style.left = originX + 'px';
+      p.style.top = originY + 'px';
+      p.style.width = size + 'px';
+      p.style.height = (size * (Math.random()>0.5 ? 1 : 2.4)) + 'px';
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      p.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+      layer.appendChild(p);
+
+      const angle = Math.random()*Math.PI*2;
+      const dist = (big ? 180 : 130) + Math.random()*220;
+      const dx = Math.cos(angle)*dist;
+      const dy = Math.sin(angle)*dist*0.7 - (100 + Math.random()*80);
+      const fallExtra = 220 + Math.random()*140;
+      const rot = Math.random()*720 - 360;
+      const duration = 1100 + Math.random()*600;
+
+      p.animate([
+        { transform:'translate(0px,0px) rotate(0deg)', opacity:1, offset:0 },
+        { transform:`translate(${dx*0.6}px, ${dy}px) rotate(${rot*0.5}deg)`, opacity:1, offset:0.35 },
+        { transform:`translate(${dx}px, ${dy+fallExtra}px) rotate(${rot}deg)`, opacity:0, offset:1 }
+      ], { duration, easing:'cubic-bezier(.2,.6,.35,1)', fill:'forwards' });
+    }
+    setTimeout(()=> layer.remove(), 2000);
+  }
+
+  // ---------- SPIN ANIMATION ----------
+  function setWheelAngle(deg){
+    wheelGroup.setAttribute('transform', `rotate(${deg} ${CX} ${CY})`);
+  }
+  setWheelAngle(0);
+
+  function easeOutQuart(t){ return 1 - Math.pow(1-t,4); }
+
+  function animateSpin(targetRotation, duration, onDone){
+    const start = currentRotation;
+    const delta = targetRotation - start;
+    const t0 = performance.now();
+    let lastPassIndex = Math.floor((((-start)%360)+360)%360 / SLICE_ANGLE);
+
+    function frame(now){
+      let t = (now - t0) / duration;
+      if(t > 1) t = 1;
+      const eased = easeOutQuart(t);
+      const live = start + delta*eased;
+      setWheelAngle(live);
+
+      const passIndex = Math.floor((((-live)%360)+360)%360 / SLICE_ANGLE);
+      if(passIndex !== lastPassIndex){
+        lastPassIndex = passIndex;
+        tick();
+      }
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      }else{
+        currentRotation = targetRotation;
+        onDone();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- STATE / RESULTS ----------
+  const statusText = document.getElementById('statusText');
+  const cardsWrap = document.getElementById('cardsWrap');
+  const spinBtn = document.getElementById('spinBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalTag = document.getElementById('modalTag');
+  const modalText = document.getElementById('modalText');
+  const modalOk = document.getElementById('modalOk');
+
+  function setStatus(msg){ statusText.textContent = msg; }
+
+  function showModal(tag, text){
+    modalTag.textContent = tag;
+    modalText.textContent = text;
+    modalOverlay.classList.add('show');
+  }
+  function hideModal(){ modalOverlay.classList.remove('show'); }
+  modalOk.addEventListener('click', hideModal);
+  modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) hideModal(); });
+
+  function clearEmptyNote(){
+    const note = document.getElementById('emptyNote');
+    if(note) note.remove();
+  }
+
+  function addCard(html, invited){
+    clearEmptyNote();
+    const div = document.createElement('div');
+    div.className = 'result-card' + (invited ? ' invited' : '');
+    div.innerHTML = html;
+    cardsWrap.appendChild(div);
+    cardsWrap.scrollTop = cardsWrap.scrollHeight;
+    return div;
+  }
+
+  function addWaitingCard(team){
+    clearEmptyNote();
+    const div = document.createElement('div');
+    div.className = 'result-card waiting';
+    div.innerHTML = `<span class="tag">WAITING</span>
+                      <div class="match">${team.name}<span class="vs">VS</span>?</div>`;
+    cardsWrap.appendChild(div);
+    cardsWrap.scrollTop = cardsWrap.scrollHeight;
+    return div;
+  }
+
+  function completeWaitingCard(el, a, b){
+    el.classList.remove('waiting');
+    el.innerHTML = `<span class="tag">MATCHUP</span>
+                     <div class="match">${a.name}<span class="vs">VS</span>${b.name}</div>`;
+  }
+
+  function teamIndex(team){ return TEAMS.indexOf(team); }
+
+  function checkAllUsed(){
+    if(used.every(Boolean)){
+      spinBtn.disabled = true;
+      setStatus('All matchups are set. Press RESET to run a new draw.');
+      return true;
+    }
+    return false;
+  }
+
+  function onLanded(i){
+    const team = TEAMS[i];
+    used[i] = true;
+
+    if(team.invited){
+      revealSliceLabel(i);
+      refreshDim();
+      jackpotFanfare();
+      spawnPopper(true);
+      popperSound(true);
+
+      const weakPool = TEAMS.filter((t,idx)=> t.weak && !used[idx]);
+      let opponent = null;
+      if(weakPool.length){
+        opponent = weakPool[Math.floor(Math.random()*weakPool.length)];
+        used[teamIndex(opponent)] = true;
+        refreshDim();
+      }
+      addCard(
+        `<span class="tag">INVITED SLOT · FIXED</span>
+         <div class="match">${team.name}${opponent ? `<span class="vs">VS</span>${opponent.name}` : ' — opponent TBD'}</div>`,
+        true
+      );
+      showModal('INVITED SLOT LOCKED', `${team.name}${opponent ? ' vs ' + opponent.name : ''}`);
+      setStatus(`${team.name} revealed and locked as an invited slot.`);
+    } else {
+      refreshDim();
+      coinCascade();
+      spawnPopper(false);
+      popperSound(false);
+
+      pendingQueue.push(team);
+      if(pendingQueue.length === 2){
+        const [a,b] = pendingQueue;
+        pendingQueue = [];
+        if(waitingCardEl){
+          completeWaitingCard(waitingCardEl, a, b);
+          waitingCardEl = null;
+        } else {
+          addCard(`<span class="tag">MATCHUP</span>
+                   <div class="match">${a.name}<span class="vs">VS</span>${b.name}</div>`, false);
+        }
+        showModal('MATCHUP SET', `${a.name} vs ${b.name}`);
+        setStatus('Matchup locked. Spin again for the next draw.');
+      } else {
+        waitingCardEl = addWaitingCard(team);
+        showModal('TEAM DRAWN', `${team.name} is locked in — spin again to find their opponent.`);
+        setStatus(`${team.name} is waiting on the side — spin again for their opponent.`);
+      }
+    }
+
+    if(checkAllUsed()){
+      if(pendingQueue.length === 1){
+        const solo = pendingQueue.pop();
+        if(waitingCardEl){
+          waitingCardEl.classList.remove('waiting');
+          waitingCardEl.innerHTML = `<span class="tag">BYE</span>
+                                      <div class="match">${solo.name} <span class="vs">ADVANCES</span></div>`;
+          waitingCardEl = null;
+        } else {
+          addCard(`<span class="tag">BYE</span>
+                   <div class="match">${solo.name} <span class="vs">ADVANCES</span></div>`, false);
+        }
+      }
+    }
+    spinning = false;
+    spinBtn.disabled = used.every(Boolean);
+  }
+
+  function spin(){
+    if(spinning) return;
+    const available = [];
+    for(let i=0;i<N;i++) if(!used[i]) available.push(i);
+    if(available.length === 0) return;
+
+    ensureAudio();
+    spinning = true;
+    spinBtn.disabled = true;
+    setStatus('Spinning...');
+
+    const i = available[Math.floor(Math.random()*available.length)];
+    const center = sliceCenterAngle(i);
+    const jitter = (Math.random()*14 - 7);
+    let targetMod = ((-(center + jitter)) % 360 + 360) % 360;
+    const currentMod = ((currentRotation % 360) + 360) % 360;
+    let diff = (targetMod - currentMod + 360) % 360;
+    const fullSpins = 6 + Math.floor(Math.random()*3);
+    const targetRotation = currentRotation + fullSpins*360 + diff;
+
+    animateSpin(targetRotation, 4800, ()=> onLanded(i));
+  }
+
+  function resetAll(){
+    used = new Array(N).fill(false);
+    pendingQueue = [];
+    waitingCardEl = null;
+    refreshDim();
+    TEAMS.forEach((team,i)=>{
+      if(team.invited){
+        const el = sliceTextEls[i];
+        if(el){ el.textContent = MYSTERY_LABEL; el.setAttribute('font-size','22'); }
+      }
+    });
+    cardsWrap.innerHTML = '<div class="empty-note" id="emptyNote">No matchups drawn yet.</div>';
+    spinBtn.disabled = false;
+    setStatus('Press SPIN THE WHEEL to draw the first matchup.');
+    hideModal();
+    animateSpin(0, 700, ()=>{ currentRotation = 0; });
+  }
+
+  spinBtn.addEventListener('click', spin);
+  resetBtn.addEventListener('click', resetAll);
+
+})();
+</script>
+</body>
+</html>
